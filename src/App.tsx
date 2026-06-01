@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { loadAllPlugins } from './api'
 import type { Plugin } from './types'
-import CatalogPage from './CatalogPage'
+import CatalogPage from './components/CatalogPage'
 
 type Status = 'loading' | 'error' | 'ok'
 
@@ -18,7 +18,23 @@ function App() {
       .catch(() => setStatus('error'))
   }, [])
 
-  return <CatalogPage plugins={plugins} status={status} />
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <p className="text-zinc-500">Loading plugins…</p>
+      </div>
+    )
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <p className="text-red-400">Failed to load plugins.</p>
+      </div>
+    )
+  }
+
+  return <CatalogPage plugins={plugins} onSelectPlugin={() => {}} />
 }
 
 export default App
