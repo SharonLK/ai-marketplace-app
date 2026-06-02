@@ -5,7 +5,7 @@ export default function Header() {
     <header className="bg-zinc-900 border-b border-zinc-800">
       <div className="max-w-6xl mx-auto px-4 py-5 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-100">Claude Code Marketplace</h1>
+          <h1 className="text-2xl font-bold text-zinc-100">Ofek 324 Claude Code Marketplace</h1>
           <p className="text-sm text-zinc-500 mt-0.5">Discover plugins for Claude Code</p>
         </div>
         <a
