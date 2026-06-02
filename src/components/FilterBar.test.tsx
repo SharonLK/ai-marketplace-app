@@ -17,6 +17,7 @@ function renderBar(overrides: Partial<Parameters<typeof FilterBar>[0]> = {}) {
     sort: 'default' as const,
     onSort: vi.fn(),
     typeCounts: emptyTypeCounts,
+    onShowShortcuts: vi.fn(),
     ...overrides,
   }
   return { ...render(<FilterBar {...props} />), props }

@@ -5,6 +5,7 @@ import Header from './Header'
 import PluginCard from './PluginCard'
 import FilterBar, { type SortOrder } from './FilterBar'
 import SkeletonCard from './SkeletonCard'
+import ShortcutsModal from './ShortcutsModal'
 
 interface Props {
   plugins: Plugin[]
@@ -18,15 +19,33 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
   const [activeTypes, setActiveTypes] = useState<PluginType[]>([])
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState<SortOrder>('default')
+  const [showShortcuts, setShowShortcuts] = useState(false)
+  const [starred, setStarred] = useState<Set<string>>(() => {
+    try {
+      return new Set(JSON.parse(localStorage.getItem('starred-plugins') ?? '[]') as string[])
+    } catch {
+      return new Set()
+    }
+  })
   const searchRef = useRef<HTMLInputElement>(null)
+
+  function toggleStar(id: string) {
+    setStarred(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      localStorage.setItem('starred-plugins', JSON.stringify([...next]))
+      return next
+    })
+  }
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key !== '/') return
       const target = e.target as HTMLElement
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return
-      e.preventDefault()
-      searchRef.current?.focus()
+      if (e.key === '/') {
+        e.preventDefault()
+        searchRef.current?.focus()
+      }
     }
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
@@ -57,6 +76,9 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
     )
     .slice()
     .sort((a, b) => {
+      const aS = starred.has(a.id) ? 0 : 1
+      const bS = starred.has(b.id) ? 0 : 1
+      if (aS !== bS) return aS - bS
       if (sort === 'asc') return a.displayName.localeCompare(b.displayName)
       if (sort === 'desc') return b.displayName.localeCompare(a.displayName)
       return 0
@@ -88,11 +110,14 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
         plugin={plugin}
         onOpen={() => onSelectPlugin(plugin)}
         search={search}
+        starred={starred.has(plugin.id)}
+        onToggleStar={toggleStar}
       />
     ))
   }
 
   return (
+    <>
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
       <Header theme={theme} onChangeTheme={onChangeTheme} />
       <main className="max-w-6xl mx-auto px-4 py-8">
@@ -108,6 +133,7 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
             onSort={setSort}
             typeCounts={typeCounts}
             inputRef={searchRef}
+            onShowShortcuts={() => setShowShortcuts(true)}
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -115,5 +141,7 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
         </div>
       </main>
     </div>
+    {showShortcuts && <ShortcutsModal onClose={() => setShowShortcuts(false)} />}
+    </>
   )
 }

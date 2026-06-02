@@ -30,9 +30,10 @@ interface Props {
   onSort: (s: SortOrder) => void
   typeCounts: Record<PluginType, number>
   inputRef?: RefObject<HTMLInputElement>
+  onShowShortcuts: () => void
 }
 
-export default function FilterBar({ total, filtered, activeTypes, onToggleType, search, onSearch, sort, onSort, typeCounts, inputRef }: Props) {
+export default function FilterBar({ total, filtered, activeTypes, onToggleType, search, onSearch, sort, onSort, typeCounts, inputRef, onShowShortcuts }: Props) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -75,6 +76,14 @@ export default function FilterBar({ total, filtered, activeTypes, onToggleType, 
           <option value="asc">A → Z</option>
           <option value="desc">Z → A</option>
         </select>
+        <button
+          onClick={onShowShortcuts}
+          aria-label="Show keyboard shortcuts"
+          title="Keyboard shortcuts"
+          className="w-7 h-7 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-500 transition-colors text-sm font-medium shrink-0"
+        >
+          ?
+        </button>
       </div>
       <p className="text-xs text-zinc-500 dark:text-zinc-500">
         Showing {filtered} of {total} plugins

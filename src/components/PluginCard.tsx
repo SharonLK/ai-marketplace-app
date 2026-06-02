@@ -14,6 +14,8 @@ interface Props {
   plugin: Plugin
   onOpen: () => void
   search?: string
+  starred?: boolean
+  onToggleStar?: (id: string) => void
 }
 
 function Highlighted({ text, query }: { text: string; query: string }) {
@@ -48,24 +50,39 @@ function HighlightedSubstring({ text, query }: { text: string; query: string }) 
   return <>{parts}</>
 }
 
-export default function PluginCard({ plugin, onOpen, search = '' }: Props) {
+export default function PluginCard({ plugin, onOpen, search = '', starred = false, onToggleStar }: Props) {
   return (
-    <button
-      onClick={onOpen}
-      className="text-left w-full bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all cursor-pointer"
-    >
-      <div className="flex items-start justify-between gap-2 mb-3">
-        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${BADGE[plugin.type]}`}>
-          {plugin.type}
-        </span>
-        <span className="text-xs text-zinc-500">v{plugin.version}</span>
-      </div>
-      <h2 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-1">
-        <Highlighted text={plugin.displayName} query={search} />
-      </h2>
-      <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">
-        <HighlightedSubstring text={plugin.description} query={search} />
-      </p>
-    </button>
+    <div className="relative">
+      <button
+        onClick={onOpen}
+        className="text-left w-full bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all cursor-pointer"
+      >
+        <div className="flex items-center gap-2 mb-3">
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${BADGE[plugin.type]}`}>
+            {plugin.type}
+          </span>
+          <span className="text-xs text-zinc-400 dark:text-zinc-500">v{plugin.version}</span>
+        </div>
+        <h2 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-1">
+          <Highlighted text={plugin.displayName} query={search} />
+        </h2>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">
+          <HighlightedSubstring text={plugin.description} query={search} />
+        </p>
+      </button>
+      {onToggleStar && (
+        <button
+          onClick={e => { e.stopPropagation(); onToggleStar(plugin.id) }}
+          aria-label={starred ? 'Unstar plugin' : 'Star plugin'}
+          className={`absolute top-4 right-4 transition-colors text-base leading-none ${
+            starred
+              ? 'text-yellow-400'
+              : 'text-zinc-300 dark:text-zinc-600 hover:text-yellow-400 dark:hover:text-yellow-400'
+          }`}
+        >
+          {starred ? '★' : '☆'}
+        </button>
+      )}
+    </div>
   )
 }
