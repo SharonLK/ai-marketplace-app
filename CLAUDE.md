@@ -14,23 +14,25 @@ npm run test       # run all tests (vitest)
 
 **Data flow:** No backend. `loadAllPlugins()` in `src/api.ts` fetches raw GitHub CDN URLs — first `.claude-plugin/marketplace.json` (plugin index), then all `plugin.json` manifests in parallel — and merges them into `Plugin[]` (`src/types.ts`). The base CDN URL is `REPO_GITHUB_BASE` in `api.ts`.
 
-**State:** `App` owns top-level state (`plugins[]`, `status: 'loading'|'ok'|'error'`, `selectedPlugin`). `CatalogPage` owns filter/search state locally (`activeTypes[]`, `search` string). Filtering is pure in-render — no derived state stored.
+**State:** `App` owns `plugins[]`, `status`, `selectedPlugin`, `theme`. `CatalogPage` owns `activeTypes[]`, `search`, `sort`, `starred` (persisted to `localStorage`). Filtering is pure in-render — no derived state stored.
 
 **Component tree:**
 ```
-App  (plugins[], status, selectedPlugin)
-├── CatalogPage  (filter/search state)
+App  (plugins[], status, selectedPlugin, theme)
+├── CatalogPage  (filter/search/sort/starred state)
 │   ├── Header
-│   ├── FilterBar   (type toggles + search input, aria-pressed)
-│   ├── PluginCard[]  (click → onSelectPlugin)
-│   └── SkeletonCard×6  (shown while isLoading)
+│   ├── FilterBar   (type toggles + search input + sort + ? button)
+│   ├── PluginCard[]  (click → onSelectPlugin, star button)
+│   ├── SkeletonCard×6  (shown while isLoading)
+│   └── ShortcutsModal  (shown on ? button click)
 └── Modal  (focus trap, Escape/backdrop closes, role="dialog")
-    └── PluginDetail  (install command copy, artifact links, GitHub link)
+    └── PluginDetail  (install command copy, GitHub link)
 ```
 
-**Search:** `src/fuzzy.ts` — `fuzzyMatch(query, text)` returns matched char indices; `PluginCard` wraps them in `<mark>` for highlighting.
+**Search:** `src/fuzzy.ts` — `fuzzyMatch(query, text)` returns matched char indices for display name; description uses substring match. Both highlight matches in `<mark>`.
 
 **Install command:** `claude plugin install <id>` — requires the marketplace to be registered first via `claude plugin marketplace add https://github.com/SharonLK/ai-marketplace`.
+
 ## Tests
 
-Vitest + jsdom + @testing-library/react. 7 suites, 50 tests covering `fuzzy`, `api`, `artifactLinks`, `FilterBar`, `Modal`, `CatalogPage`, `App`.
+Vitest + jsdom + @testing-library/react. 6 suites, 43 tests covering `fuzzy`, `api`, `FilterBar`, `Modal`, `CatalogPage`, `App`.
