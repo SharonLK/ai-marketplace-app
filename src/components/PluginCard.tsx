@@ -1,3 +1,4 @@
+import type React from 'react'
 import type { Plugin, PluginType } from '../types'
 import { fuzzyMatch } from '../fuzzy'
 
@@ -30,6 +31,23 @@ function Highlighted({ text, query }: { text: string; query: string }) {
   )
 }
 
+function HighlightedSubstring({ text, query }: { text: string; query: string }) {
+  if (!query) return <>{text}</>
+  const lq = query.toLowerCase()
+  const lt = text.toLowerCase()
+  const parts: React.ReactNode[] = []
+  let last = 0
+  let idx = lt.indexOf(lq)
+  while (idx !== -1) {
+    if (idx > last) parts.push(text.slice(last, idx))
+    parts.push(<mark key={idx} className="bg-yellow-400/30 text-inherit rounded-sm">{text.slice(idx, idx + query.length)}</mark>)
+    last = idx + query.length
+    idx = lt.indexOf(lq, last)
+  }
+  if (last < text.length) parts.push(text.slice(last))
+  return <>{parts}</>
+}
+
 export default function PluginCard({ plugin, onOpen, search = '' }: Props) {
   return (
     <button
@@ -45,7 +63,9 @@ export default function PluginCard({ plugin, onOpen, search = '' }: Props) {
       <h2 className="font-semibold text-zinc-100 mb-1">
         <Highlighted text={plugin.displayName} query={search} />
       </h2>
-      <p className="text-sm text-zinc-400 line-clamp-2">{plugin.description}</p>
+      <p className="text-sm text-zinc-400 line-clamp-2">
+        <HighlightedSubstring text={plugin.description} query={search} />
+      </p>
     </button>
   )
 }

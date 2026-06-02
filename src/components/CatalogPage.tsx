@@ -32,7 +32,8 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
     .filter(p => activeTypes.length === 0 || activeTypes.includes(p.type))
     .filter(p =>
       !search ||
-      fuzzyMatch(search, p.displayName) !== null
+      fuzzyMatch(search, p.displayName) !== null ||
+      p.description.toLowerCase().includes(search.toLowerCase())
     )
     .slice()
     .sort((a, b) => {
