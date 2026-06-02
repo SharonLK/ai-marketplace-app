@@ -28,11 +28,11 @@ function CopyRow({ cmd, label }: { cmd: string; label: string }) {
   }
   return (
     <div className="flex items-center gap-2 bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2">
-      <code className="flex-1 text-xs text-zinc-300 break-all">{cmd}</code>
+      <code className="flex-1 text-xs text-zinc-100 break-all">{cmd}</code>
       <button
         onClick={handleCopy}
         aria-label={label}
-        className="shrink-0 text-zinc-400 hover:text-zinc-100 transition-colors text-sm"
+        className="shrink-0 text-zinc-300 hover:text-white transition-colors text-sm"
       >
         {copied ? '✓' : '⧉'}
       </button>
@@ -41,7 +41,8 @@ function CopyRow({ cmd, label }: { cmd: string; label: string }) {
 }
 
 export default function PluginDetail({ plugin, onClose }: Props) {
-  const installCmd = `claude plugin install ${plugin.id}`
+  const installUserCmd = `claude plugin install ${plugin.id}`
+  const installProjectCmd = `claude plugin install --scope project ${plugin.id}`
 
   return (
     <div className="p-6 flex flex-col gap-5">
@@ -64,20 +65,28 @@ export default function PluginDetail({ plugin, onClose }: Props) {
       </div>
 
       {/* Description */}
-      <p className="text-sm text-zinc-300 leading-relaxed">{plugin.description}</p>
+      <p className="text-sm text-zinc-200 leading-relaxed">{plugin.description}</p>
 
-      {/* Install — marketplace already configured */}
-      <div className="flex flex-col gap-2">
-        <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide">Install</p>
-        <CopyRow cmd={installCmd} label="Copy install command" />
-      </div>
+      <hr className="border-zinc-700" />
 
-      {/* Install — first time, no marketplace yet */}
-      <div className="flex flex-col gap-2">
-        <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide">First time setup</p>
-        <p className="text-xs text-zinc-500">Run both commands in order:</p>
-        <CopyRow cmd={MARKETPLACE_CMD} label="Copy add marketplace command" />
-        <CopyRow cmd={installCmd} label="Copy install command" />
+      {/* Install */}
+      <div className="flex flex-col gap-3">
+        <p className="text-sm font-semibold text-zinc-200">Installation</p>
+
+        <div className="flex flex-col gap-1.5">
+          <p className="text-xs text-zinc-300">1. Add marketplace <span className="text-zinc-500">(once)</span></p>
+          <CopyRow cmd={MARKETPLACE_CMD} label="Copy add marketplace command" />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <p className="text-xs text-zinc-300">2. Install for user <span className="text-zinc-500">(all projects)</span></p>
+          <CopyRow cmd={installUserCmd} label="Copy user install command" />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <p className="text-xs text-zinc-300">2. Install for project <span className="text-zinc-500">(current project only)</span></p>
+          <CopyRow cmd={installProjectCmd} label="Copy project install command" />
+        </div>
       </div>
 
       {/* Source link */}
@@ -85,7 +94,7 @@ export default function PluginDetail({ plugin, onClose }: Props) {
         href={`${REPO_GITHUB_BASE}/${plugin.path}`}
         target="_blank"
         rel="noreferrer"
-        className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+        className="text-xs text-zinc-400 hover:text-zinc-100 transition-colors"
       >
         View on GitHub →
       </a>

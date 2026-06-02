@@ -2,9 +2,9 @@ export type PluginType = 'skill' | 'hook' | 'mcp-server' | 'agent' | 'commands'
 
 export interface MarketplaceIndex {
   plugins: Array<{
-    id: string
-    type: PluginType
-    path: string
+    name: string
+    source: string
+    description: string
   }>
 }
 

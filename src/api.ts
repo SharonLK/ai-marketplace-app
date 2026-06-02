@@ -15,21 +15,29 @@ export async function fetchPluginManifest(path: string): Promise<Record<string, 
   return res.json()
 }
 
+function deriveType(m: Record<string, unknown>): import('./types').PluginType {
+  if (m.agents) return 'agent'
+  if (m.mcpServers) return 'mcp-server'
+  if (m.hooks) return 'hook'
+  if (m.commands) return 'commands'
+  return 'skill'
+}
+
 export async function loadAllPlugins(): Promise<Plugin[]> {
   const index = await fetchMarketplaceIndex()
-  const manifests = await Promise.all(
-    index.plugins.map(entry => fetchPluginManifest(entry.path))
-  )
+  const paths = index.plugins.map(e => e.source.replace(/^\.\//, ''))
+  const manifests = await Promise.all(paths.map(fetchPluginManifest))
   return index.plugins.map((entry, i) => {
     const m = manifests[i]
+    const path = paths[i]
     return {
-      id: entry.id,
-      type: entry.type,
-      path: entry.path,
-      name: (m.name as string) ?? entry.id,
-      displayName: (m.displayName as string) ?? (m.name as string) ?? entry.id,
+      id: entry.name,
+      type: deriveType(m),
+      path,
+      name: (m.name as string) ?? entry.name,
+      displayName: (m.displayName as string) ?? (m.name as string) ?? entry.name,
       version: (m.version as string) ?? '0.0.0',
-      description: (m.description as string) ?? '',
+      description: (m.description as string) ?? entry.description,
       skills: m.skills as string | undefined,
       hooks: m.hooks as string | undefined,
       mcpServers: m.mcpServers as string | undefined,
