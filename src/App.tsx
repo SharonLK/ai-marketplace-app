@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react'
 import { loadAllPlugins } from './api'
 import type { Plugin } from './types'
 import CatalogPage from './components/CatalogPage'
+import Modal from './components/Modal'
+import PluginDetail from './components/PluginDetail'
 
 type Status = 'loading' | 'error' | 'ok'
 
 function App() {
   const [plugins, setPlugins] = useState<Plugin[]>([])
   const [status, setStatus] = useState<Status>('loading')
+  const [selectedPlugin, setSelectedPlugin] = useState<Plugin | null>(null)
 
   useEffect(() => {
     loadAllPlugins()
@@ -34,7 +37,16 @@ function App() {
     )
   }
 
-  return <CatalogPage plugins={plugins} onSelectPlugin={() => {}} />
+  return (
+    <>
+      <CatalogPage plugins={plugins} onSelectPlugin={setSelectedPlugin} />
+      {selectedPlugin && (
+        <Modal onClose={() => setSelectedPlugin(null)}>
+          <PluginDetail plugin={selectedPlugin} onClose={() => setSelectedPlugin(null)} />
+        </Modal>
+      )}
+    </>
+  )
 }
 
 export default App
