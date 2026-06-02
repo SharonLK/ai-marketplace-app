@@ -15,7 +15,7 @@ interface Props {
   onClose: () => void
 }
 
-function artifactLinks(plugin: Plugin): { label: string; href: string }[] {
+export function artifactLinks(plugin: Plugin): { label: string; href: string }[] {
   const base = `${REPO_GITHUB_BASE}/${plugin.path}`
   const links: { label: string; href: string }[] = []
   if (plugin.skills) links.push({ label: plugin.skills, href: `${base}/${plugin.skills}` })
