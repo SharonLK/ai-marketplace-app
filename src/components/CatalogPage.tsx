@@ -3,7 +3,7 @@ import type { Plugin, PluginType } from '../types'
 import { fuzzyMatch } from '../fuzzy'
 import Header from './Header'
 import PluginCard from './PluginCard'
-import FilterBar from './FilterBar'
+import FilterBar, { type SortOrder } from './FilterBar'
 import SkeletonCard from './SkeletonCard'
 
 interface Props {
@@ -15,6 +15,7 @@ interface Props {
 export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin }: Props) {
   const [activeTypes, setActiveTypes] = useState<PluginType[]>([])
   const [search, setSearch] = useState('')
+  const [sort, setSort] = useState<SortOrder>('default')
 
   function handleToggleType(t: PluginType) {
     setActiveTypes(prev =>
@@ -33,6 +34,12 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
       !search ||
       fuzzyMatch(search, p.displayName) !== null
     )
+    .slice()
+    .sort((a, b) => {
+      if (sort === 'asc') return a.displayName.localeCompare(b.displayName)
+      if (sort === 'desc') return b.displayName.localeCompare(a.displayName)
+      return 0
+    })
 
   function renderGrid() {
     if (isLoading) {
@@ -73,6 +80,8 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
             onToggleType={handleToggleType}
             search={search}
             onSearch={setSearch}
+            sort={sort}
+            onSort={setSort}
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -11,8 +11,8 @@ function makeFetch(body: unknown, ok = true) {
 
 const INDEX = {
   plugins: [
-    { id: 'foo', type: 'skill' as const, path: 'plugins/foo' },
-    { id: 'bar', type: 'hook' as const, path: 'plugins/bar' },
+    { name: 'foo', source: './plugins/foo', description: 'Does foo things' },
+    { name: 'bar', source: './plugins/bar', description: 'Does bar things' },
   ],
 }
 
@@ -28,6 +28,7 @@ const BAR_MANIFEST = {
   displayName: 'Bar Hook',
   version: '2.0.0',
   description: 'Does bar things',
+  hooks: 'hooks.js',
 }
 
 describe('fetchMarketplaceIndex', () => {
@@ -114,7 +115,7 @@ describe('loadAllPlugins', () => {
         .mockResolvedValueOnce({
           ok: true,
           status: 200,
-          json: () => Promise.resolve({ plugins: [{ id: 'bare', type: 'agent', path: 'plugins/bare' }] }),
+          json: () => Promise.resolve({ plugins: [{ name: 'bare', source: './plugins/bare', description: '' }] }),
         })
         .mockResolvedValueOnce({
           ok: true,
