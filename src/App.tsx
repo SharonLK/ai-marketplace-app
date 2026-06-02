@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { loadAllPlugins } from './api'
 import type { Plugin } from './types'
 import CatalogPage from './components/CatalogPage'
@@ -11,6 +11,7 @@ function App() {
   const [plugins, setPlugins] = useState<Plugin[]>([])
   const [status, setStatus] = useState<Status>('loading')
   const [selectedPlugin, setSelectedPlugin] = useState<Plugin | null>(null)
+  const initialHash = useRef(window.location.hash.slice(1))
 
   function fetchPlugins() {
     setStatus('loading')
@@ -24,6 +25,35 @@ function App() {
   }
 
   useEffect(() => { fetchPlugins() }, [])
+
+  // Open plugin from hash on initial load — reads initialHash (captured before effects run)
+  // so Strict Mode double-invocation of the sync effect can't clear it first
+  useEffect(() => {
+    if (status !== 'ok' || plugins.length === 0) return
+    const id = initialHash.current
+    if (!id) return
+    initialHash.current = '' // consume so retry-load doesn't reopen a closed modal
+    const match = plugins.find(p => p.id === id)
+    if (match) setSelectedPlugin(match)
+  }, [status, plugins])
+
+  // Sync hash with selected plugin
+  useEffect(() => {
+    if (selectedPlugin) {
+      history.pushState(null, '', `#${selectedPlugin.id}`)
+    } else {
+      history.replaceState(null, '', window.location.pathname)
+    }
+  }, [selectedPlugin])
+
+  // Back button closes modal
+  useEffect(() => {
+    function onPopState() {
+      setSelectedPlugin(null)
+    }
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
 
   if (status === 'error') {
     return (
