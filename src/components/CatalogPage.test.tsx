@@ -47,7 +47,9 @@ describe('CatalogPage', () => {
   it('shows empty state when no plugins match filters', async () => {
     render(<CatalogPage plugins={[skillPlugin]} onSelectPlugin={vi.fn()} />)
     await userEvent.type(screen.getByRole('textbox', { name: 'Search plugins' }), 'zzznomatch')
-    expect(screen.getByText('No plugins match your filters')).toBeInTheDocument()
+    expect(screen.getByText(/No results for/)).toBeInTheDocument()
+    expect(screen.getByText('zzznomatch')).toBeInTheDocument()
+    expect(screen.getByText('Try a shorter search term or clear your filters')).toBeInTheDocument()
   })
 
   it('clear filters button restores all plugins', async () => {

@@ -48,11 +48,14 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
     }
     if (filtered.length === 0) {
       return (
-        <div className="col-span-full flex flex-col items-center justify-center py-20 gap-4">
-          <p className="text-zinc-500">No plugins match your filters</p>
+        <div className="col-span-full flex flex-col items-center justify-center py-20 gap-3">
+          <p className="text-zinc-300 font-medium">
+            {search ? <>No results for "<span className="text-zinc-100">{search}</span>"</> : 'No plugins match your filters'}
+          </p>
+          <p className="text-sm text-zinc-500">Try a shorter search term or clear your filters</p>
           <button
             onClick={clearFilters}
-            className="px-4 py-2 rounded-md bg-zinc-800 text-zinc-100 hover:bg-zinc-700 transition-colors"
+            className="mt-1 px-4 py-2 rounded-md bg-zinc-800 text-zinc-100 hover:bg-zinc-700 transition-colors"
           >
             Clear filters
           </button>
