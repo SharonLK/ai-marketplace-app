@@ -26,6 +26,7 @@ export default function FilterBar({ total, filtered, activeTypes, onToggleType, 
           value={search}
           onChange={e => onSearch(e.target.value)}
           placeholder="Search plugins…"
+          aria-label="Search plugins"
           className="flex-1 min-w-48 bg-zinc-900 border border-zinc-700 rounded-md px-3 py-1.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
         />
         <div className="flex flex-wrap gap-1.5">

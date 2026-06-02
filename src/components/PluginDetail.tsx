@@ -52,7 +52,6 @@ export default function PluginDetail({ plugin, onClose }: Props) {
         </div>
         <button
           onClick={onClose}
-          autoFocus
           aria-label="Close"
           className="text-zinc-400 hover:text-zinc-100 transition-colors shrink-0 text-xl leading-none"
         >
