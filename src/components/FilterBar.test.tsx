@@ -4,6 +4,8 @@ import { describe, it, expect, vi } from 'vitest'
 import FilterBar from './FilterBar'
 import type { PluginType } from '../types'
 
+const emptyTypeCounts = { skill: 0, hook: 0, 'mcp-server': 0, agent: 0, commands: 0 }
+
 function renderBar(overrides: Partial<Parameters<typeof FilterBar>[0]> = {}) {
   const props = {
     total: 5,
@@ -12,6 +14,9 @@ function renderBar(overrides: Partial<Parameters<typeof FilterBar>[0]> = {}) {
     onToggleType: vi.fn(),
     search: '',
     onSearch: vi.fn(),
+    sort: 'default' as const,
+    onSort: vi.fn(),
+    typeCounts: emptyTypeCounts,
     ...overrides,
   }
   return { ...render(<FilterBar {...props} />), props }
@@ -26,20 +31,20 @@ describe('FilterBar', () => {
   it('renders all 5 type toggle buttons', () => {
     renderBar()
     for (const label of ['Skill', 'Hook', 'MCP Server', 'Agent', 'Commands']) {
-      expect(screen.getByRole('button', { name: label })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: new RegExp(`^${label}`) })).toBeInTheDocument()
     }
   })
 
   it('active type has aria-pressed="true", inactive has "false"', () => {
     renderBar({ activeTypes: ['skill'] })
-    expect(screen.getByRole('button', { name: 'Skill' })).toHaveAttribute('aria-pressed', 'true')
-    expect(screen.getByRole('button', { name: 'Hook' })).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByRole('button', { name: /^Skill/ })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: /^Hook/ })).toHaveAttribute('aria-pressed', 'false')
   })
 
   it('clicking a toggle calls onToggleType with the correct type', async () => {
     const onToggleType = vi.fn()
     renderBar({ onToggleType })
-    await userEvent.click(screen.getByRole('button', { name: 'Hook' }))
+    await userEvent.click(screen.getByRole('button', { name: /^Hook/ }))
     expect(onToggleType).toHaveBeenCalledWith('hook')
   })
 

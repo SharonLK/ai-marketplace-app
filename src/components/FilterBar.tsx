@@ -27,9 +27,10 @@ interface Props {
   onSearch: (s: string) => void
   sort: SortOrder
   onSort: (s: SortOrder) => void
+  typeCounts: Record<PluginType, number>
 }
 
-export default function FilterBar({ total, filtered, activeTypes, onToggleType, search, onSearch, sort, onSort }: Props) {
+export default function FilterBar({ total, filtered, activeTypes, onToggleType, search, onSearch, sort, onSort, typeCounts }: Props) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -54,6 +55,9 @@ export default function FilterBar({ total, filtered, activeTypes, onToggleType, 
                 }`}
               >
                 {label}
+                {typeCounts[type] > 0 && (
+                  <span className="ml-1.5 opacity-60">{typeCounts[type]}</span>
+                )}
               </button>
             )
           })}

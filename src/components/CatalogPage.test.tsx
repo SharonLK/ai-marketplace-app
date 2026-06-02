@@ -32,7 +32,7 @@ describe('CatalogPage', () => {
 
   it('filters plugins by type when a toggle is active', async () => {
     render(<CatalogPage plugins={[skillPlugin, hookPlugin]} onSelectPlugin={vi.fn()} />)
-    await userEvent.click(screen.getByRole('button', { name: 'Skill' }))
+    await userEvent.click(screen.getByRole('button', { name: /^Skill/ }))
     expect(screen.getByText('Skill One')).toBeInTheDocument()
     expect(screen.queryByText('Hook One')).not.toBeInTheDocument()
   })

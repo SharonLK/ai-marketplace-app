@@ -28,6 +28,11 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
     setSearch('')
   }
 
+  const typeCounts = plugins.reduce(
+    (acc, p) => ({ ...acc, [p.type]: (acc[p.type] ?? 0) + 1 }),
+    {} as Record<string, number>
+  ) as Record<import('../types').PluginType, number>
+
   const filtered = plugins
     .filter(p => activeTypes.length === 0 || activeTypes.includes(p.type))
     .filter(p =>
@@ -86,6 +91,7 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
             onSearch={setSearch}
             sort={sort}
             onSort={setSort}
+            typeCounts={typeCounts}
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
