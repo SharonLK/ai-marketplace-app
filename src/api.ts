@@ -1,7 +1,7 @@
 import type { MarketplaceIndex, Plugin } from './types'
 
-export const REPO_RAW_BASE = 'https://raw.githubusercontent.com/SharonLK/claude-code-marketplace/master'
-export const REPO_GITHUB_BASE = 'https://github.com/SharonLK/claude-code-marketplace/tree/master'
+export const REPO_RAW_BASE = 'https://raw.githubusercontent.com/SharonLK/ai-marketplace/master'
+export const REPO_GITHUB_BASE = 'https://github.com/SharonLK/ai-marketplace/tree/master'
 
 export async function fetchMarketplaceIndex(): Promise<MarketplaceIndex> {
   const res = await fetch(`${REPO_RAW_BASE}/.claude-plugin/marketplace.json`)

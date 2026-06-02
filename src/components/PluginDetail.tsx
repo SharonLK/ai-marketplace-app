@@ -15,29 +15,33 @@ interface Props {
   onClose: () => void
 }
 
-export function artifactLinks(plugin: Plugin): { label: string; href: string }[] {
-  const base = `${REPO_GITHUB_BASE}/${plugin.path}`
-  const links: { label: string; href: string }[] = []
-  if (plugin.skills) links.push({ label: plugin.skills, href: `${base}/${plugin.skills}` })
-  if (plugin.hooks) links.push({ label: plugin.hooks, href: `${base}/${plugin.hooks}` })
-  if (plugin.mcpServers) links.push({ label: plugin.mcpServers, href: `${base}/${plugin.mcpServers}` })
-  if (plugin.agents) plugin.agents.forEach(a => links.push({ label: a, href: `${base}/${a}` }))
-  if (plugin.commands) plugin.commands.forEach(c => links.push({ label: c, href: `${base}/${c}` }))
-  return links
-}
 
-export default function PluginDetail({ plugin, onClose }: Props) {
+const MARKETPLACE_CMD = 'claude plugin marketplace add https://github.com/SharonLK/ai-marketplace'
+
+function CopyRow({ cmd, label }: { cmd: string; label: string }) {
   const [copied, setCopied] = useState(false)
-  const installCmd = `claude plugin install ${plugin.id}`
-
   function handleCopy() {
-    navigator.clipboard.writeText(installCmd).then(() => {
+    navigator.clipboard.writeText(cmd).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     })
   }
+  return (
+    <div className="flex items-center gap-2 bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2">
+      <code className="flex-1 text-xs text-zinc-300 break-all">{cmd}</code>
+      <button
+        onClick={handleCopy}
+        aria-label={label}
+        className="shrink-0 text-zinc-400 hover:text-zinc-100 transition-colors text-sm"
+      >
+        {copied ? '✓' : '⧉'}
+      </button>
+    </div>
+  )
+}
 
-  const artifacts = artifactLinks(plugin)
+export default function PluginDetail({ plugin, onClose }: Props) {
+  const installCmd = `claude plugin install ${plugin.id}`
 
   return (
     <div className="p-6 flex flex-col gap-5">
@@ -62,41 +66,19 @@ export default function PluginDetail({ plugin, onClose }: Props) {
       {/* Description */}
       <p className="text-sm text-zinc-300 leading-relaxed">{plugin.description}</p>
 
-      {/* Try it */}
+      {/* Install — marketplace already configured */}
       <div className="flex flex-col gap-2">
-        <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide">Try it</p>
-        <div className="flex items-center gap-2 bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2">
-          <code className="flex-1 text-xs text-zinc-300 break-all">{installCmd}</code>
-          <button
-            onClick={handleCopy}
-            aria-label="Copy install command"
-            className="shrink-0 text-zinc-400 hover:text-zinc-100 transition-colors text-sm"
-          >
-            {copied ? '✓' : '⧉'}
-          </button>
-        </div>
+        <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide">Install</p>
+        <CopyRow cmd={installCmd} label="Copy install command" />
       </div>
 
-      {/* Artifacts */}
-      {artifacts.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide">Artifacts</p>
-          <ul className="flex flex-col gap-1">
-            {artifacts.map(({ label, href }) => (
-              <li key={href}>
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs text-blue-400 hover:text-blue-300 break-all"
-                >
-                  {label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* Install — first time, no marketplace yet */}
+      <div className="flex flex-col gap-2">
+        <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide">First time setup</p>
+        <p className="text-xs text-zinc-500">Run both commands in order:</p>
+        <CopyRow cmd={MARKETPLACE_CMD} label="Copy add marketplace command" />
+        <CopyRow cmd={installCmd} label="Copy install command" />
+      </div>
 
       {/* Source link */}
       <a

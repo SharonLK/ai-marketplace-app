@@ -1,6 +1,6 @@
 # Ofek 324 Claude Code Marketplace
 
-Read-only plugin browser for [claude-code-marketplace](https://github.com/SharonLK/claude-code-marketplace). Users discover, filter, search, and copy install commands for Claude Code plugins.
+Read-only plugin browser for [ai-marketplace](https://github.com/SharonLK/ai-marketplace). Users discover, filter, search, and copy install commands for Claude Code plugins.
 
 ## Commands
 
@@ -30,7 +30,7 @@ App  (plugins[], status, selectedPlugin)
 
 **Search:** `src/fuzzy.ts` — `fuzzyMatch(query, text)` returns matched char indices; `PluginCard` wraps them in `<mark>` for highlighting.
 
-**Install command:** `claude plugin install <id>` — requires the marketplace to be registered first via `claude plugin marketplace add SharonLK/claude-code-marketplace`.
+**Install command:** `claude plugin install <id>` — requires the marketplace to be registered first via `claude plugin marketplace add https://github.com/SharonLK/ai-marketplace`.
 ## Tests
 
 Vitest + jsdom + @testing-library/react. 7 suites, 50 tests covering `fuzzy`, `api`, `artifactLinks`, `FilterBar`, `Modal`, `CatalogPage`, `App`.

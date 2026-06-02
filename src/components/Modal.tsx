@@ -50,7 +50,7 @@ export default function Modal({ onClose, children }: Props) {
         ref={panelRef}
         role="dialog"
         aria-modal="true"
-        className="relative bg-zinc-900 border border-zinc-700 rounded-2xl w-full max-w-xl mx-4 max-h-[90vh] overflow-y-auto"
+        className="relative bg-zinc-900 border border-zinc-700 rounded-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
       >
         {children}
       </div>
