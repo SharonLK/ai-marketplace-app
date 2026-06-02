@@ -10,9 +10,11 @@ interface Props {
   plugins: Plugin[]
   isLoading?: boolean
   onSelectPlugin: (p: Plugin) => void
+  theme?: 'light' | 'dark'
+  onChangeTheme?: (t: 'light' | 'dark') => void
 }
 
-export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin }: Props) {
+export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin, theme, onChangeTheme }: Props) {
   const [activeTypes, setActiveTypes] = useState<PluginType[]>([])
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState<SortOrder>('default')
@@ -67,13 +69,13 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
     if (filtered.length === 0) {
       return (
         <div className="col-span-full flex flex-col items-center justify-center py-20 gap-3">
-          <p className="text-zinc-300 font-medium">
-            {search ? <>No results for "<span className="text-zinc-100">{search}</span>"</> : 'No plugins match your filters'}
+          <p className="text-zinc-700 dark:text-zinc-300 font-medium">
+            {search ? <>No results for "<span className="text-zinc-900 dark:text-zinc-100">{search}</span>"</> : 'No plugins match your filters'}
           </p>
           <p className="text-sm text-zinc-500">Try a shorter search term or clear your filters</p>
           <button
             onClick={clearFilters}
-            className="mt-1 px-4 py-2 rounded-md bg-zinc-800 text-zinc-100 hover:bg-zinc-700 transition-colors"
+            className="mt-1 px-4 py-2 rounded-md bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-colors"
           >
             Clear filters
           </button>
@@ -91,8 +93,8 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950">
-      <Header />
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
+      <Header theme={theme} onChangeTheme={onChangeTheme} />
       <main className="max-w-6xl mx-auto px-4 py-8">
         <div className="mb-6">
           <FilterBar
