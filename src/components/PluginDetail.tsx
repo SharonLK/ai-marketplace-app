@@ -28,7 +28,7 @@ export function artifactLinks(plugin: Plugin): { label: string; href: string }[]
 
 export default function PluginDetail({ plugin, onClose }: Props) {
   const [copied, setCopied] = useState(false)
-  const installCmd = `claude plugin install github:SharonLK/claude-code-marketplace/plugins/${plugin.id}`
+  const installCmd = `claude plugin install ${plugin.id}`
 
   function handleCopy() {
     navigator.clipboard.writeText(installCmd).then(() => {
