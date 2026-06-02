@@ -4,13 +4,15 @@ import { fuzzyMatch } from '../fuzzy'
 import Header from './Header'
 import PluginCard from './PluginCard'
 import FilterBar from './FilterBar'
+import SkeletonCard from './SkeletonCard'
 
 interface Props {
   plugins: Plugin[]
+  isLoading?: boolean
   onSelectPlugin: (p: Plugin) => void
 }
 
-export default function CatalogPage({ plugins, onSelectPlugin }: Props) {
+export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin }: Props) {
   const [activeTypes, setActiveTypes] = useState<PluginType[]>([])
   const [search, setSearch] = useState('')
 
@@ -20,12 +22,44 @@ export default function CatalogPage({ plugins, onSelectPlugin }: Props) {
     )
   }
 
+  function clearFilters() {
+    setActiveTypes([])
+    setSearch('')
+  }
+
   const filtered = plugins
     .filter(p => activeTypes.length === 0 || activeTypes.includes(p.type))
     .filter(p =>
       !search ||
       fuzzyMatch(search, p.displayName) !== null
     )
+
+  function renderGrid() {
+    if (isLoading) {
+      return Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)
+    }
+    if (filtered.length === 0) {
+      return (
+        <div className="col-span-full flex flex-col items-center justify-center py-20 gap-4">
+          <p className="text-zinc-500">No plugins match your filters</p>
+          <button
+            onClick={clearFilters}
+            className="px-4 py-2 rounded-md bg-zinc-800 text-zinc-100 hover:bg-zinc-700 transition-colors"
+          >
+            Clear filters
+          </button>
+        </div>
+      )
+    }
+    return filtered.map(plugin => (
+      <PluginCard
+        key={plugin.id}
+        plugin={plugin}
+        onOpen={() => onSelectPlugin(plugin)}
+        search={search}
+      />
+    ))
+  }
 
   return (
     <div className="min-h-screen bg-zinc-950">
@@ -34,7 +68,7 @@ export default function CatalogPage({ plugins, onSelectPlugin }: Props) {
         <div className="mb-6">
           <FilterBar
             total={plugins.length}
-            filtered={filtered.length}
+            filtered={isLoading ? 0 : filtered.length}
             activeTypes={activeTypes}
             onToggleType={handleToggleType}
             search={search}
@@ -42,14 +76,7 @@ export default function CatalogPage({ plugins, onSelectPlugin }: Props) {
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map(plugin => (
-            <PluginCard
-              key={plugin.id}
-              plugin={plugin}
-              onOpen={() => onSelectPlugin(plugin)}
-              search={search}
-            />
-          ))}
+          {renderGrid()}
         </div>
       </main>
     </div>

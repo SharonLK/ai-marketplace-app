@@ -12,34 +12,36 @@ function App() {
   const [status, setStatus] = useState<Status>('loading')
   const [selectedPlugin, setSelectedPlugin] = useState<Plugin | null>(null)
 
-  useEffect(() => {
+  function fetchPlugins() {
+    setStatus('loading')
+    setPlugins([])
     loadAllPlugins()
       .then(data => {
         setPlugins(data)
         setStatus('ok')
       })
       .catch(() => setStatus('error'))
-  }, [])
-
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-        <p className="text-zinc-500">Loading plugins…</p>
-      </div>
-    )
   }
+
+  useEffect(() => { fetchPlugins() }, [])
 
   if (status === 'error') {
     return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-        <p className="text-red-400">Failed to load plugins.</p>
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center gap-4">
+        <p className="text-red-400 text-lg">Failed to load plugins</p>
+        <button
+          onClick={fetchPlugins}
+          className="px-4 py-2 rounded-md bg-zinc-800 text-zinc-100 hover:bg-zinc-700 transition-colors"
+        >
+          Try again
+        </button>
       </div>
     )
   }
 
   return (
     <>
-      <CatalogPage plugins={plugins} onSelectPlugin={setSelectedPlugin} />
+      <CatalogPage plugins={plugins} isLoading={status === 'loading'} onSelectPlugin={setSelectedPlugin} />
       {selectedPlugin && (
         <Modal onClose={() => setSelectedPlugin(null)}>
           <PluginDetail plugin={selectedPlugin} onClose={() => setSelectedPlugin(null)} />
