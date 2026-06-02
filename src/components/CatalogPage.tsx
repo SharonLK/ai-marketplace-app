@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Plugin, PluginType } from '../types'
 import { fuzzyMatch } from '../fuzzy'
 import Header from './Header'
@@ -16,6 +16,19 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
   const [activeTypes, setActiveTypes] = useState<PluginType[]>([])
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState<SortOrder>('default')
+  const searchRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key !== '/') return
+      const target = e.target as HTMLElement
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return
+      e.preventDefault()
+      searchRef.current?.focus()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [])
 
   function handleToggleType(t: PluginType) {
     setActiveTypes(prev =>
@@ -92,6 +105,7 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
             sort={sort}
             onSort={setSort}
             typeCounts={typeCounts}
+            inputRef={searchRef}
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -1,3 +1,4 @@
+import type { RefObject } from 'react'
 import type { PluginType } from '../types'
 
 const TYPE_LABELS: { type: PluginType; label: string }[] = [
@@ -28,9 +29,10 @@ interface Props {
   sort: SortOrder
   onSort: (s: SortOrder) => void
   typeCounts: Record<PluginType, number>
+  inputRef?: RefObject<HTMLInputElement>
 }
 
-export default function FilterBar({ total, filtered, activeTypes, onToggleType, search, onSearch, sort, onSort, typeCounts }: Props) {
+export default function FilterBar({ total, filtered, activeTypes, onToggleType, search, onSearch, sort, onSort, typeCounts, inputRef }: Props) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -40,6 +42,7 @@ export default function FilterBar({ total, filtered, activeTypes, onToggleType, 
           onChange={e => onSearch(e.target.value)}
           placeholder="Search plugins…"
           aria-label="Search plugins"
+          ref={inputRef}
           className="flex-1 min-w-48 bg-zinc-900 border border-zinc-700 rounded-md px-3 py-1.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500"
         />
         <div className="flex flex-wrap gap-1.5">
