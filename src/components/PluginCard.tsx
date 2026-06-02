@@ -1,4 +1,5 @@
 import type { Plugin, PluginType } from '../types'
+import { fuzzyMatch } from '../fuzzy'
 
 const BADGE: Record<PluginType, string> = {
   skill: 'bg-blue-950 text-blue-300',
@@ -11,9 +12,25 @@ const BADGE: Record<PluginType, string> = {
 interface Props {
   plugin: Plugin
   onOpen: () => void
+  search?: string
 }
 
-export default function PluginCard({ plugin, onOpen }: Props) {
+function Highlighted({ text, query }: { text: string; query: string }) {
+  if (!query) return <>{text}</>
+  const matched = new Set(fuzzyMatch(query, text) ?? [])
+  if (matched.size === 0) return <>{text}</>
+  return (
+    <>
+      {Array.from(text).map((char, i) =>
+        matched.has(i)
+          ? <mark key={i} className="bg-yellow-400/30 text-inherit rounded-sm">{char}</mark>
+          : char
+      )}
+    </>
+  )
+}
+
+export default function PluginCard({ plugin, onOpen, search = '' }: Props) {
   return (
     <button
       onClick={onOpen}
@@ -25,7 +42,9 @@ export default function PluginCard({ plugin, onOpen }: Props) {
         </span>
         <span className="text-xs text-zinc-500">v{plugin.version}</span>
       </div>
-      <h2 className="font-semibold text-zinc-100 mb-1">{plugin.displayName}</h2>
+      <h2 className="font-semibold text-zinc-100 mb-1">
+        <Highlighted text={plugin.displayName} query={search} />
+      </h2>
       <p className="text-sm text-zinc-400 line-clamp-2">{plugin.description}</p>
     </button>
   )
