@@ -19,6 +19,7 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
   const [activeTypes, setActiveTypes] = useState<PluginType[]>([])
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState<SortOrder>('default')
+  const [showStarredOnly, setShowStarredOnly] = useState(false)
   const [showShortcuts, setShowShortcuts] = useState(false)
   const [starred, setStarred] = useState<Set<string>>(() => {
     try {
@@ -60,6 +61,7 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
   function clearFilters() {
     setActiveTypes([])
     setSearch('')
+    setShowStarredOnly(false)
   }
 
   const typeCounts = plugins.reduce(
@@ -69,6 +71,7 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
 
   const filtered = plugins
     .filter(p => activeTypes.length === 0 || activeTypes.includes(p.type))
+    .filter(p => !showStarredOnly || starred.has(p.id))
     .filter(p =>
       !search ||
       fuzzyMatch(search, p.displayName) !== null ||
@@ -76,9 +79,6 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
     )
     .slice()
     .sort((a, b) => {
-      const aS = starred.has(a.id) ? 0 : 1
-      const bS = starred.has(b.id) ? 0 : 1
-      if (aS !== bS) return aS - bS
       if (sort === 'asc') return a.displayName.localeCompare(b.displayName)
       if (sort === 'desc') return b.displayName.localeCompare(a.displayName)
       return 0
@@ -119,7 +119,7 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
   return (
     <>
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-      <Header theme={theme} onChangeTheme={onChangeTheme} />
+      <Header theme={theme} onChangeTheme={onChangeTheme} onShowShortcuts={() => setShowShortcuts(true)} />
       <main className="max-w-6xl mx-auto px-4 py-8">
         <div className="mb-6">
           <FilterBar
@@ -133,7 +133,9 @@ export default function CatalogPage({ plugins, isLoading = false, onSelectPlugin
             onSort={setSort}
             typeCounts={typeCounts}
             inputRef={searchRef}
-            onShowShortcuts={() => setShowShortcuts(true)}
+            showStarredOnly={showStarredOnly}
+            onToggleStarredOnly={() => setShowStarredOnly(v => !v)}
+            starredCount={starred.size}
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

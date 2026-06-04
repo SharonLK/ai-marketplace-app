@@ -30,10 +30,12 @@ interface Props {
   onSort: (s: SortOrder) => void
   typeCounts: Record<PluginType, number>
   inputRef?: RefObject<HTMLInputElement>
-  onShowShortcuts: () => void
+  showStarredOnly: boolean
+  onToggleStarredOnly: () => void
+  starredCount: number
 }
 
-export default function FilterBar({ total, filtered, activeTypes, onToggleType, search, onSearch, sort, onSort, typeCounts, inputRef, onShowShortcuts }: Props) {
+export default function FilterBar({ total, filtered, activeTypes, onToggleType, search, onSearch, sort, onSort, typeCounts, inputRef, showStarredOnly, onToggleStarredOnly, starredCount }: Props) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -66,6 +68,19 @@ export default function FilterBar({ total, filtered, activeTypes, onToggleType, 
             )
           })}
         </div>
+        <div className="w-px self-stretch bg-zinc-200 dark:bg-zinc-700 mx-0.5 shrink-0" />
+        <button
+          onClick={onToggleStarredOnly}
+          aria-pressed={showStarredOnly}
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium border transition-colors shrink-0 ${
+            showStarredOnly
+              ? 'bg-amber-400 text-amber-950 border-amber-400 dark:bg-amber-500 dark:text-amber-950 dark:border-amber-500'
+              : 'bg-transparent text-zinc-500 border-zinc-200 hover:border-amber-300 hover:text-amber-600 dark:text-zinc-400 dark:border-zinc-700 dark:hover:border-amber-600 dark:hover:text-amber-400'
+          }`}
+        >
+          <span className="text-sm leading-none">★</span>
+          {showStarredOnly ? 'Starred' : starredCount > 0 ? `${starredCount} starred` : 'Starred'}
+        </button>
         <select
           value={sort}
           onChange={e => onSort(e.target.value as SortOrder)}
@@ -76,14 +91,6 @@ export default function FilterBar({ total, filtered, activeTypes, onToggleType, 
           <option value="asc">A → Z</option>
           <option value="desc">Z → A</option>
         </select>
-        <button
-          onClick={onShowShortcuts}
-          aria-label="Show keyboard shortcuts"
-          title="Keyboard shortcuts"
-          className="w-7 h-7 flex items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-500 transition-colors text-sm font-medium shrink-0"
-        >
-          ?
-        </button>
       </div>
       <p className="text-xs text-zinc-500 dark:text-zinc-500">
         Showing {filtered} of {total} plugins

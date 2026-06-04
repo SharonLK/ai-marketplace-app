@@ -4,9 +4,10 @@ import { REPO_GITHUB_BASE } from '../api'
 interface Props {
   theme?: 'light' | 'dark'
   onChangeTheme?: (t: 'light' | 'dark') => void
+  onShowShortcuts?: () => void
 }
 
-export default function Header({ theme, onChangeTheme }: Props) {
+export default function Header({ theme, onChangeTheme, onShowShortcuts }: Props) {
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -36,6 +37,16 @@ export default function Header({ theme, onChangeTheme }: Props) {
           >
             View on GitHub
           </a>
+          {onShowShortcuts && (
+            <button
+              onClick={onShowShortcuts}
+              aria-label="Show keyboard shortcuts"
+              title="Keyboard shortcuts"
+              className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors rounded-md p-1.5 text-sm font-medium w-7 h-7 flex items-center justify-center"
+            >
+              ?
+            </button>
+          )}
           {onChangeTheme && (
             <div ref={menuRef} className="relative">
               <button
