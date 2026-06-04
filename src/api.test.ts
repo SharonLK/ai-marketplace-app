@@ -36,7 +36,7 @@ describe('fetchMarketplaceIndex', () => {
     const fetch = makeFetch(INDEX)
     vi.stubGlobal('fetch', fetch)
     await fetchMarketplaceIndex()
-    expect(fetch).toHaveBeenCalledWith(`${REPO_RAW_BASE}/.claude-plugin/marketplace.json`)
+    expect(fetch).toHaveBeenCalledWith(`${REPO_RAW_BASE}/.claude-plugin/marketplace.json`, { cache: 'no-cache' })
   })
 
   it('returns parsed JSON', async () => {
